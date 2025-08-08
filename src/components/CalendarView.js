@@ -17,12 +17,13 @@ function CalendarView() {
     title: `Users: ${users.length}`,
     start: moment(date, "DD-MM-YYYY").toDate(),
     end: moment(date, "DD-MM-YYYY").toDate(),
-    allDay: true
+    allDay: true,
+    userCount: users.length
   }));
 
-  const handleSelect = (slotInfo) => {
-    const selected = moment(slotInfo.start).format("DD-MM-YYYY");
-    dispatch(setSelectedDate(selected));
+  const openModalForDate = (date) => {
+    const formatted = moment(date).format("DD-MM-YYYY");
+    dispatch(setSelectedDate(formatted));
     setModalOpen(true);
   };
 
@@ -38,18 +39,41 @@ function CalendarView() {
     return {};
   };
 
+  const eventPropGetter = (event) => {
+    let backgroundColor = '#3f51b5';
+    if (event.userCount >= 5) backgroundColor = '#4caf50';
+    else if (event.userCount >= 4) backgroundColor = '#ff9800';
+    else backgroundColor = '#f44336';
+
+    return {
+      style: {
+        backgroundColor,
+        borderRadius: '6px',
+        color: 'white',
+        border: 'none',
+        padding: '2px 6px',
+        fontSize: '0.85rem',
+        fontWeight: '500',
+        boxShadow: '0px 2px 5px rgba(0,0,0,0.2)',
+        cursor: 'pointer' 
+      }
+    };
+  };
+
   return (
     <>
       <Calendar
         localizer={localizer}
         events={events}
         selectable
-        onSelectSlot={handleSelect}
+        onSelectSlot={(slotInfo) => openModalForDate(slotInfo.start)} 
+        onSelectEvent={(event) => openModalForDate(event.start)} 
         views={['month', 'week', 'day']}
         startAccessor="start"
         endAccessor="end"
         style={{ height: 600, margin: '50px' }}
         dayPropGetter={dayPropGetter}
+        eventPropGetter={eventPropGetter}
       />
       <BarGraphModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
