@@ -10,7 +10,7 @@ const localizer = momentLocalizer(moment);
 
 function CalendarView() {
   const dispatch = useDispatch();
-  const data = useSelector(state => state.calendar.data);
+  const { data, selectedDate } = useSelector(state => state.calendar);
   const [modalOpen, setModalOpen] = useState(false);
 
   const events = Object.entries(data).map(([date, users]) => ({
@@ -26,6 +26,18 @@ function CalendarView() {
     setModalOpen(true);
   };
 
+  const dayPropGetter = (date) => {
+    if (moment(date).format("DD-MM-YYYY") === selectedDate) {
+      return {
+        style: {
+          backgroundColor: '#9a9bed',
+          border: '2px solid #9a9bed'
+        }
+      };
+    }
+    return {};
+  };
+
   return (
     <>
       <Calendar
@@ -37,6 +49,7 @@ function CalendarView() {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 600, margin: '50px' }}
+        dayPropGetter={dayPropGetter}
       />
       <BarGraphModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </>
